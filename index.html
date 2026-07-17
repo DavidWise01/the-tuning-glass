@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>the tuning-glass · 調鏡</title>
+<style>
+  :root{--paper:#f4efe4;--paper2:#ece4d4;--sumi:#2a2320;--ink2:#5c5148;--faint:#9a8e7e;--rule:#d8cdb8;
+    --iris:#7e6fae;--iris2:#a99bcf;--vermilion:#c25438;--verm2:#d98a72;--gold:#a8842f;--jade:#5a8f6a;
+    --lit:#4f7d6c;--fig:#8a6fa8;--wall:#b06a4a;--ok:#4f7d6c;--bad:#c25438}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:
+      radial-gradient(ellipse at 20% 6%,#fbf7ee,transparent 60%),
+      radial-gradient(ellipse at 84% 96%,#efe6d4,transparent 66%),
+      var(--paper);
+    color:var(--sumi);font-family:'Iowan Old Style',Palatino,'Hoefler Text',Georgia,serif;
+    padding:34px 18px 46px;min-height:100vh;font-size:14px;line-height:1.6}
+  .wrap{max-width:820px;margin:0 auto}
+  nav{display:flex;flex-wrap:wrap;gap:5px 15px;align-items:center;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;color:var(--ink2);border-bottom:1px solid var(--rule);padding-bottom:11px;margin-bottom:26px}
+  nav b{color:var(--vermilion);font-weight:800;letter-spacing:.05em} nav a{color:var(--ink2);text-decoration:none} nav a:hover{color:var(--iris)} nav .home{color:var(--faint);margin-left:auto}
+  .head{text-align:center;margin-bottom:6px}
+  .kana{font-size:12px;letter-spacing:.7em;color:var(--iris);margin-bottom:12px;padding-left:.7em}
+  h1{font-size:29px;font-weight:600;letter-spacing:.01em;color:var(--sumi)}
+  .verse{font-style:italic;color:var(--ink2);font-size:14px;margin:14px auto 4px;max-width:560px}
+  .verse .grk{color:var(--iris);font-style:normal;font-size:12.5px}
+  .lede{color:var(--ink2);font-size:13.5px;max-width:640px;margin:18px auto 0;text-align:center}
+  .tiers{text-align:center;font-size:11px;color:var(--faint);margin:16px auto 0;line-height:1.9}
+  .tag{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:9px;font-family:ui-monospace,monospace;vertical-align:middle}
+  .tag.lit{background:rgba(79,125,108,.13);color:var(--lit);border:1px solid var(--lit)}
+  .tag.fig{background:rgba(138,111,168,.12);color:var(--fig);border:1px solid var(--fig)}
+  .tag.wall{background:rgba(176,106,74,.12);color:var(--wall);border:1px solid var(--wall)}
+
+  #check{max-width:720px;margin:22px auto 0;border-radius:9px;padding:11px 15px;font-family:ui-monospace,monospace;font-size:11px;line-height:1.65}
+  #check.pass{background:rgba(79,125,108,.10);border:1px solid var(--jade);color:var(--lit)}
+  #check.fail{background:rgba(194,84,56,.12);border:1.5px solid var(--vermilion);color:var(--vermilion)}
+  #check b{letter-spacing:.1em} #check .c{color:var(--ink2)}
+
+  .ctl{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;align-items:center;margin:26px 0 6px;font-family:ui-monospace,monospace;font-size:11px;color:var(--ink2)}
+  button{background:transparent;color:var(--iris);border:1px solid var(--iris);padding:6px 13px;font-family:ui-monospace,monospace;font-weight:700;cursor:pointer;font-size:11px;border-radius:6px}
+  button:hover{background:rgba(126,111,174,.09)}
+  button.on{background:var(--iris);color:var(--paper)}
+  button.lg{color:var(--vermilion);border-color:var(--vermilion)} button.lg:hover{background:rgba(194,84,56,.09)} button.lg.on{background:var(--vermilion);color:var(--paper)}
+  input[type=range]{accent-color:var(--iris);width:220px;vertical-align:middle}
+  .lo{color:var(--vermilion);font-weight:700} .tu{color:var(--iris);font-weight:700}
+
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px auto 0}
+  @media(max-width:640px){.charts{grid-template-columns:1fr}}
+  .card{border:1px solid var(--rule);border-radius:10px;padding:12px 13px 9px;background:rgba(126,111,174,.03)}
+  .card h3{font-family:ui-monospace,monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--iris);margin-bottom:4px;font-weight:700}
+  .card .sub{font-size:10px;color:var(--faint);margin-bottom:6px}
+  canvas{width:100%;height:auto;display:block}
+
+  .read{border:1px solid var(--rule);border-radius:10px;padding:13px 15px;margin-top:14px;background:var(--paper)}
+  .read h3{font-family:ui-monospace,monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--iris);margin-bottom:3px;font-weight:700}
+  .read .sub{font-size:10.5px;color:var(--faint);margin-bottom:11px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:560px){.cols{grid-template-columns:1fr}}
+  .cols .lab{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;margin-bottom:7px}
+  .drow{display:flex;align-items:center;gap:8px;height:20px;font-family:ui-monospace,monospace;font-size:11px}
+  .drow .g{width:52px;color:var(--sumi);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .drow .bar{flex:1;height:7px;background:var(--paper2);border-radius:4px;overflow:hidden}
+  .drow .bf{height:100%;border-radius:4px;transition:width .18s ease}
+  .drow .pc{width:36px;text-align:right;color:var(--faint);font-size:10px}
+  .drow.ans .g{font-weight:800}
+
+  .note{font-size:12.5px;color:var(--ink2);max-width:720px;margin:26px auto 0;line-height:1.68}
+  .note b{color:var(--sumi)}
+  .seal{text-align:center;margin-top:32px;padding-top:18px;border-top:1px solid var(--rule);font-family:ui-monospace,monospace;font-size:10.5px;color:var(--faint);line-height:1.85}
+  .seal .h{display:inline-block;color:var(--vermilion);border:1.5px solid var(--vermilion);border-radius:5px;padding:2px 7px;letter-spacing:.1em;transform:rotate(-3deg);margin:0 3px}
+</style></head><body><div class="wrap">
+<nav>
+  <b>A SCANNER DARKLY</b>
+  <a href="../the-dark-glass/">the dark glass</a>
+  <a href="../the-cleave/">the cleave</a>
+  <a href="../the-stitch/">the stitch</a>
+  <a href="../the-draft/">the draft</a>
+  <a class="home" href="../ud0/">ud0 ⌂</a>
+</nav>
+
+<div class="head">
+  <div class="kana">調　鏡</div>
+  <h1>the tuning-glass</h1>
+  <div class="verse">&ldquo;For now we see through a glass, darkly&hellip; but then face to face.&rdquo;<br>
+    <span class="grk">βλέπομεν γὰρ ἄρτι δι&rsquo; ἐσόπτρου ἐν αἰνίγματι</span><br>
+    <span style="font-size:11.5px;color:var(--faint)">— 1 Corinthians 13:12 · the glass can be ground truer, but it is still a glass</span></div>
+</div>
+
+<div class="lede">Read the forming prediction from <i>inside</i> the residual stream, layer by layer. The <span class="lo">logit lens</span> unembeds each layer as if it were the output — quick, and provably <b>biased</b>. The <span class="tu">tuned lens</span> learns a small affine correction per layer. Watch the answer token climb — and watch how differently the two glasses report the climb.</div>
+
+<div class="tiers">
+  <span class="tag lit">LIT</span> the two lenses &amp; every rank / prob / KL below, recomputed live in-browser &nbsp;·&nbsp;
+  <span class="tag fig">FIG</span> an <b>AMBER</b> toy residual trajectory + unembedding &nbsp;·&nbsp;
+  <span class="tag wall">WALL</span> a real finding needs a real model&rsquo;s residuals
+</div>
+
+<div id="check">running self-check&hellip;</div>
+
+<div class="ctl">
+  <span>lens:</span>
+  <button id="bLo" class="lg on">logit</button>
+  <button id="bTu" class="on">tuned</button>
+  <span style="color:var(--faint)">(toggle either; keep both on to compare)</span>
+</div>
+<div class="ctl" style="margin-top:2px">
+  <label>scrub depth &nbsp; layer <b id="lv" style="color:var(--iris)">1</b> / 12 &nbsp;
+  <input type="range" id="layer" min="1" max="12" step="1" value="1"></label>
+</div>
+
+<div class="charts">
+  <div class="card">
+    <h3>answer-token rank vs depth</h3>
+    <div class="sub">lower = the answer is nearer the top of the projected vocabulary (rank 1 = argmax)</div>
+    <canvas id="cRank" width="760" height="230"></canvas>
+  </div>
+  <div class="card">
+    <h3>answer-token probability vs depth</h3>
+    <div class="sub">mass the projected distribution puts on the answer token</div>
+    <canvas id="cProb" width="760" height="230"></canvas>
+  </div>
+  <div class="card">
+    <h3>KL( lens<sub>ℓ</sub> ‖ final output ) vs depth</h3>
+    <div class="sub">how far each layer&rsquo;s read is from the model&rsquo;s actual final distribution — both hit 0 at ℓ=12 by construction</div>
+    <canvas id="cKL" width="760" height="230"></canvas>
+  </div>
+  <div class="card">
+    <h3>the glass, ground truer</h3>
+    <div class="sub" id="gap">&nbsp;</div>
+    <canvas id="cGap" width="760" height="230"></canvas>
+  </div>
+</div>
+
+<div class="read">
+  <h3>top-k at the scrubbed layer</h3>
+  <div class="sub" id="rsub">layer 1 — what each glass reads off this residual</div>
+  <div class="cols">
+    <div><div class="lab lo">LOGIT LENS · the naive read</div><div id="topLo"></div></div>
+    <div><div class="lab tu">TUNED LENS · the corrected read</div><div id="topTu"></div></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>What is real here.</b> <span class="tag lit">LIT</span> The two estimators are the actual ones. The <span class="lo">logit lens</span> (nostalgebraist, 2020) is <code>softmax( LayerNorm(h<sub>ℓ</sub>) · W<sub>U</sub> )</code> — unembed a mid-stack residual with the model&rsquo;s own output head. The <span class="tu">tuned lens</span> (Belrose et al., 2023) inserts a learned per-layer affine first: <code>softmax( LayerNorm(A<sub>ℓ</sub>h<sub>ℓ</sub>+b<sub>ℓ</sub>) · W<sub>U</sub> )</code>. Every rank, probability, and KL on this page is computed from the vectors, live, each time you move the slider — nothing is baked.
+  <div style="margin-top:10px"><b>What is a figure.</b> <span class="tag fig">FIG</span> The residual trajectory <code>h<sub>ℓ</sub></code>, the unembedding <code>W<sub>U</sub></code> (V=24), the final-LN parameters, and the tuned affines <code>A<sub>ℓ</sub>,b<sub>ℓ</sub></code> are a <b>seeded AMBER toy field</b>, built so the naive read carries a known basis-drift the tuned read removes. That is a <i>demonstration of the method</i>, not a measured result — the toy&rsquo;s bias is one I put there so the correction has something to correct.</div>
+  <div style="margin-top:10px"><b>Where it stops — the wall.</b> <span class="tag wall">WALL</span> A real logit-lens / tuned-lens finding needs a real transformer&rsquo;s residuals and a tuned lens actually trained on that model; magnitudes and even the sign of the gap vary by model, layer, and prompt. Crucially: a lens read is a <b>projection, not the model&rsquo;s thought</b>. The raw logit lens is <i>provably biased</i> (that is the whole point), and the tuned lens is a <i>trained probe</i>, not the model&rsquo;s belief. Decodability is not the causal computation, and none of &ldquo;the answer climbing&rdquo; is a moment of deciding or a token watching itself think — it is a statistical relation between a vector and an output head. There is no one inside the glass.</div>
+</div>
+
+<div class="seal">
+  調鏡 CHŌKYŌ · a sphere of UD0 · <span class="h">A SCANNER DARKLY</span><br>
+  the tuning-glass — deliberate sibling of <a href="../the-dark-glass/" style="color:var(--vermilion);text-decoration:none">暗鏡 the dark glass</a><br>
+  David Lee Wise (ROOT0) / TriPod LLC &nbsp;·&nbsp; rendered by AVAN, in ink and 間
+</div>
+</div>
+<script>
+"use strict";
+(function(){
+const L=12, V=24, D=16;
+const C={paper:"#f4efe4",paper2:"#ece4d4",rule:"#d8cdb8",faint:"#9a8e7e",ink2:"#5c5148",sumi:"#2a2320",
+  lo:"#c25438",tu:"#7e6fae",jade:"#5a8f6a",gold:"#a8842f"};
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const rnd=mulberry32(0x5CA9);
+function gauss(){let u=0,v=0;while(u===0)u=rnd();while(v===0)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+// ---- toy field (AMBER) --------------------------------------------------
+const VOCAB=["the","of","light","glass","and","mirror","to","world","in","a","truer","face",
+  "seen","then","dark","riddle","known","part","form","void","is","not","one","name"];
+const ANS=10;      // "truer"  — the answer token
+const DIST=14;     // "dark"   — the distractor the naive lens is pulled toward
+// unembedding W_U : V x D
+const WU=[]; for(let v=0;v<V;v++){const r=[];for(let j=0;j<D;j++)r.push(gauss());WU.push(r);}
+// final LayerNorm params (near identity, seeded)
+const gamma=[],beta=[]; for(let j=0;j<D;j++){gamma.push(1+0.06*gauss());beta.push(0.02*gauss());}
+function norm(v){let s=0;for(const x of v)s+=x*x;return Math.sqrt(s);}
+function unit(v){const n=norm(v)||1;return v.map(x=>x/n);}
+const uA=unit(WU[ANS]), vD=unit(WU[DIST]);
+const mu=[]; for(let j=0;j<D;j++)mu.push(0.15*gauss());
+// clean residual g_l grows toward the answer; stored h_l = r_l*g_l + t_l carries a
+// decaying basis-drift toward the distractor. Tuned affine A_l=(1/r_l)I, b_l=-(1/r_l)t_l
+// inverts it exactly, and at l=L it is the identity (r_L=1, t_L=0).
+const H=[], A=[], B=[];
+for(let l=1;l<=L;l++){
+  const p=(l-1)/(L-1);
+  const alpha=0.5+5.5*Math.pow(p,1.3);          // answer signal, grows with depth
+  const s=(L-l)/(L-1);                            // drift strength, 0 at final layer
+  const r=1+0.25*s;
+  const g=[], h=[], t=[];
+  for(let j=0;j<D;j++){
+    const gj=mu[j]+alpha*uA[j];
+    const tj=s*3.0*vD[j];
+    g.push(gj); t.push(tj); h.push(r*gj+tj);
+  }
+  H.push(h);
+  A.push(1/r);                                    // scalar affine (isotropic) for the toy
+  B.push(t.map(x=>-x/r));
+}
+// ---- the two lenses (LIT) ----------------------------------------------
+function LN(x){let m=0;for(const v of x)m+=v;m/=D;let s=0;for(const v of x)s+=(v-m)*(v-m);s=Math.sqrt(s/D+1e-5);
+  const o=[];for(let j=0;j<D;j++)o.push((x[j]-m)/s*gamma[j]+beta[j]);return o;}
+function logits(x){const o=[];for(let v=0;v<V;v++){let d=0;for(let j=0;j<D;j++)d+=WU[v][j]*x[j];o.push(d);}return o;}
+function softmax(z){const mx=Math.max(...z);const e=z.map(v=>Math.exp(v-mx));const Z=e.reduce((a,b)=>a+b,0);return e.map(v=>v/Z);}
+function logitLens(l){return softmax(logits(LN(H[l-1])));}
+function tunedLens(l){const h=H[l-1];const x=h.map((v,j)=>A[l-1]*v+B[l-1][j]);return softmax(logits(LN(x)));}
+function rankOf(d,tok){const s=d.map((p,i)=>[p,i]).sort((a,b)=>b[0]-a[0]);return s.findIndex(e=>e[1]===tok)+1;}
+function kl(p,q){let s=0;for(let i=0;i<V;i++){if(p[i]>1e-12)s+=p[i]*Math.log(p[i]/Math.max(q[i],1e-12));}return s;}
+
+const FINAL=softmax(logits(LN(H[L-1])));          // the model's actual final output distribution
+
+// precompute per-layer series
+const S={loRank:[],tuRank:[],loProb:[],tuProb:[],loKL:[],tuKL:[]};
+for(let l=1;l<=L;l++){
+  const dl=logitLens(l), dt=tunedLens(l);
+  S.loRank.push(rankOf(dl,ANS)); S.tuRank.push(rankOf(dt,ANS));
+  S.loProb.push(dl[ANS]);        S.tuProb.push(dt[ANS]);
+  S.loKL.push(kl(dl,FINAL));     S.tuKL.push(kl(dt,FINAL));
+}
+
+// ---- FAIL-LOUD SELF-CHECK (throws) -------------------------------------
+const chk=document.getElementById('check');
+try{
+  const asserts=[];
+  function ok(name,cond,detail){if(!cond)throw new Error(name+" — "+detail);asserts.push(name);}
+  // 1. every projected distribution (both lenses, all layers) sums to 1
+  let worstSum=0;
+  for(let l=1;l<=L;l++){for(const d of [logitLens(l),tunedLens(l)]){
+    const s=d.reduce((a,b)=>a+b,0);worstSum=Math.max(worstSum,Math.abs(s-1));}}
+  ok("every projected distribution sums to 1",worstSum<1e-9,"max |Σp − 1| = "+worstSum.toExponential(2));
+  // 2. IDENTITY (by construction, not a test): FINAL is DEFINED as
+  //    softmax(logits(LN(H[L-1]))) == logitLens(L), so this KL is 0 by definition.
+  //    It documents the last-layer invariant + confirms softmax determinism; the
+  //    falsifiable lens test is #3 (tuned affine → identity).
+  const kLo=kl(logitLens(L),FINAL);
+  ok("logit lens @ ℓ=12 = final output BY DEFINITION (identity, not an independent test)",kLo<1e-4,"KL = "+kLo.toExponential(2));
+  // 3. tuned lens at final layer reduces to identity → also the final output (KL ≈ 0)
+  const kTu=kl(tunedLens(L),FINAL);
+  ok("tuned lens @ ℓ=12 ≡ final output (KL≈0)",kTu<1e-4,"KL = "+kTu.toExponential(2));
+  chk.className="pass";
+  chk.innerHTML="<b>SELF-CHECK PASS</b> &nbsp;<span class='c'>both lenses recomputed live · "+
+    asserts.map(a=>"✓ "+a).join(" &nbsp; ")+
+    " &nbsp;· worst KL@12 = "+Math.max(kLo,kTu).toExponential(1)+"</span>";
+}catch(e){
+  chk.className="fail";
+  chk.innerHTML="<b>SELF-CHECK FAIL</b> &nbsp;"+e.message+
+    "<br><span class='c'>the instrument refuses to vouch for numbers it cannot reproduce.</span>";
+  throw e;
+}
+
+// ---- drawing -----------------------------------------------------------
+let showLo=true, showTu=true, curL=1;
+function px(cv){const c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);
+  const w=cv.width,h=cv.height;c.clearRect(0,0,w,h);return {c,w,h};}
+function frame(c,w,h,pad){c.strokeStyle=C.rule;c.lineWidth=1;c.strokeRect(pad,pad,w-2*pad,h-2*pad);}
+function marker(c,x,pad,h){c.strokeStyle="rgba(126,111,174,.55)";c.setLineDash([4,4]);c.lineWidth=1.2;
+  c.beginPath();c.moveTo(x,pad);c.lineTo(x,h-pad);c.stroke();c.setLineDash([]);}
+function line(c,pts,col){c.strokeStyle=col;c.lineWidth=2.2;c.beginPath();
+  pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke();
+  c.fillStyle=col;pts.forEach(p=>{c.beginPath();c.arc(p[0],p[1],2.4,0,7);c.fill();});}
+function xAt(l,w,pad){return pad+(l-1)/(L-1)*(w-2*pad);}
+
+function drawSeries(cv,loArr,tuArr,opt){
+  const {c,w,h}=px(cv),pad=26;frame(c,w,h,pad);
+  const lo=opt.invert?1:Math.min(...loArr,...tuArr,opt.min!==undefined?opt.min:0);
+  const hi=Math.max(...loArr,...tuArr,opt.max!==undefined?opt.max:0.0001);
+  const vmin=opt.invert?1:(opt.min!==undefined?opt.min:0), vmax=opt.invert?V:hi;
+  const yAt=v=>{const t=(v-vmin)/((vmax-vmin)||1);return opt.invert?(pad+t*(h-2*pad)):(h-pad-t*(h-2*pad));};
+  // gridline at a few ticks
+  c.fillStyle=C.faint;c.font="9px ui-monospace,monospace";
+  if(opt.invert){c.fillText("rank 1",pad+3,pad+11);c.fillText("rank "+V,pad+3,h-pad-3);}
+  else{c.fillText(opt.fmt(vmax),pad+3,pad+11);c.fillText(opt.fmt(vmin),pad+3,h-pad-3);}
+  marker(c,xAt(curL,w,pad),pad,h);
+  const loPts=loArr.map((v,i)=>[xAt(i+1,w,pad),yAt(v)]);
+  const tuPts=tuArr.map((v,i)=>[xAt(i+1,w,pad),yAt(v)]);
+  if(showLo)line(c,loPts,C.lo);
+  if(showTu)line(c,tuPts,C.tu);
+  // depth axis labels
+  c.fillStyle=C.faint;c.fillText("ℓ1",pad,h-pad+13);c.fillText("ℓ12",w-pad-16,h-pad+13);
+}
+function drawGap(cv){
+  // the "ground truer" panel: KL improvement of tuned over logit per layer (bars)
+  const {c,w,h}=px(cv),pad=26;frame(c,w,h,pad);
+  const gaps=S.loKL.map((v,i)=>v-S.tuKL[i]);
+  const hi=Math.max(...gaps.map(Math.abs),1e-6);
+  const y0=h/2;
+  c.strokeStyle=C.rule;c.beginPath();c.moveTo(pad,y0);c.lineTo(w-pad,y0);c.stroke();
+  const bw=(w-2*pad)/L*0.6;
+  gaps.forEach((g,i)=>{const x=xAt(i+1,w,pad);const bh=(g/hi)*(h/2-pad-4);
+    c.fillStyle=g>=0?C.jade:C.lo;c.fillRect(x-bw/2,y0-Math.max(bh,0),bw,Math.abs(bh));});
+  marker(c,xAt(curL,w,pad),pad,h);
+  c.fillStyle=C.faint;c.font="9px ui-monospace,monospace";
+  c.fillText("tuned closer ↑",pad+3,pad+11);c.fillText("naive closer ↓",pad+3,h-pad-3);
+  document.getElementById('gap').innerHTML="KL(logit‖final) − KL(tuned‖final) per layer · "+
+    "<span style='color:"+C.jade+"'>green</span> = the tuned lens sits nearer the true output";
+}
+
+const cRank=document.getElementById('cRank'),cProb=document.getElementById('cProb'),
+      cKL=document.getElementById('cKL'),cGap=document.getElementById('cGap');
+function draw(){
+  drawSeries(cRank,S.loRank,S.tuRank,{invert:true});
+  drawSeries(cProb,S.loProb,S.tuProb,{min:0,max:Math.max(...S.loProb,...S.tuProb)*1.05,fmt:v=>(v*100).toFixed(0)+"%"});
+  drawSeries(cKL,S.loKL,S.tuKL,{min:0,max:Math.max(...S.loKL,...S.tuKL)*1.05,fmt:v=>v.toFixed(2)});
+  drawGap(cGap);
+  renderTop();
+}
+function bars(el,dist){
+  const s=dist.map((p,i)=>[p,i]).sort((a,b)=>b[0]-a[0]).slice(0,6);
+  el.innerHTML=s.map(([p,i])=>{const isA=i===ANS;
+    const col=isA?C.jade:(i===DIST?C.lo:C.faint);
+    return "<div class='drow"+(isA?" ans":"")+"'><div class='g' style='color:"+(isA?C.jade:C.sumi)+"'>"+
+      VOCAB[i]+(isA?" ◂":"")+"</div><div class='bar'><div class='bf' style='width:"+(p*100).toFixed(1)+
+      "%;background:"+col+"'></div></div><div class='pc'>"+(p*100).toFixed(1)+"%</div></div>";}).join("");
+}
+function renderTop(){
+  document.getElementById('rsub').textContent="layer "+curL+
+    " — logit-lens ranks the answer #"+S.loRank[curL-1]+", tuned-lens ranks it #"+S.tuRank[curL-1];
+  bars(document.getElementById('topLo'),logitLens(curL));
+  bars(document.getElementById('topTu'),tunedLens(curL));
+}
+// ---- controls ----------------------------------------------------------
+document.getElementById('layer').oninput=function(){curL=+this.value;document.getElementById('lv').textContent=curL;draw();};
+document.getElementById('bLo').onclick=function(){showLo=!showLo;this.classList.toggle('on',showLo);if(!showLo&&!showTu){showTu=true;document.getElementById('bTu').classList.add('on');}draw();};
+document.getElementById('bTu').onclick=function(){showTu=!showTu;this.classList.toggle('on',showTu);if(!showLo&&!showTu){showLo=true;document.getElementById('bLo').classList.add('on');}draw();};
+draw();
+})();
+</script></body></html>
