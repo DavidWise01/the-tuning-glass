@@ -1,0 +1,9 @@
+ROOT0-DLW-CHAIN-v1
+index : 1429
+slug  : the-tuning-glass
+seal  : 889f493fb4f2483da4527659d6d48783ecde8a12da315c168b7ecd5c93239095
+prev  : adb67df17f0c9953e58006acdc033c55e339834d24577bf3de68396b541ebb59
+link  : feef5c51d1e1fb3c7b2a9228b15418a32f58cd1826010e0dbc72cc4091f17057
+head  : 5cbf511193a0782e59acd13458cd21f3193bebee46cb3a76c2e467e873ab6441
+
+— the tether: link = sha256(index|slug|seal|prev). the chain head commits to the whole corpus.
